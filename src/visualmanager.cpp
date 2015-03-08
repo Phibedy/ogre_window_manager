@@ -11,6 +11,8 @@
 #include <OGRE/OgreSceneManager.h>
 #include <OGRE/OgreRenderWindow.h>
 #include <OGRE/OgreMaterial.h>
+#include <OGRE/OgreMaterialManager.h>
+#include <OGRE/OgreTechnique.h>
 
 #include <pthread.h>
 #include <X11/Xlib.h>

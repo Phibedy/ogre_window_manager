@@ -11,8 +11,7 @@
 #include <OGRE/OgreLight.h>
 #include <OGRE/OgreEntity.h>
 
-namespace visual
-{
+namespace visual{
 window::window(VisualManager* vm, int w, int h, const std::string &t, bool move) :
     creator(vm)
     , movement_enabled(move)
@@ -303,9 +302,8 @@ bool window::keyPressed(const OIS::KeyEvent &arg)
     return true;
 }
 
-bool window::keyReleased(const OIS::KeyEvent &)
-{
+bool window::keyReleased(const OIS::KeyEvent &){
     ///Ignore
     return true;
 }
-
+} //End namespace
