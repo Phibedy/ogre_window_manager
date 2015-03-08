@@ -7,13 +7,12 @@
 #include <OGRE/OgreRoot.h>
 #include <OGRE/OgreSceneManager.h>
 
-//#include <extra/configurationmanager.h>
-
 #include <pthread.h>
 #include <core/framework.h>
 #include <core/datamanager.h>
 
 class VisualManager {
+    friend class OgreFrameHandler;
 private: 
     //TODO give logger
     VisualManager(lms::DataManager* dataManager);

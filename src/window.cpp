@@ -14,11 +14,11 @@
 namespace visual{
 window::window(VisualManager* vm, int w, int h, const std::string &t, bool move) :
     creator(vm)
-    , movement_enabled(move)
-    , mouse_state(STATE_NONE)
-    , yaw (0)
-    , pitch (M_PI/2.)
-    , distance (3)
+  , movement_enabled(move)
+  , mouse_state(STATE_NONE)
+  , yaw (0)
+  , pitch (M_PI/2.)
+  , distance (3)
 {
     printf("Window CTOR Title: %s\n\n", t.c_str());
     
@@ -29,7 +29,7 @@ window::window(VisualManager* vm, int w, int h, const std::string &t, bool move)
 
     try {
         ogreWindow = creator->getRoot()->createRenderWindow( t, w, h,
-                     false, &params );
+                                                             false, &params );
 
         ///TODO Config parameter to read "Fullscreen"
         //ogreWindow->setFullscreen(true, 1920, 1080);
@@ -67,19 +67,19 @@ window::window(VisualManager* vm, int w, int h, const std::string &t, bool move)
     cameraFocusNode->scale(0.001, 0.001, 0.0001);
     cameraFocusNode->setPosition(Ogre::Vector3::ZERO);
     cameraFocusNode->setVisible(false);
-        
+
     Ogre::Light *light = manager->createLight();
     cameraNode->attachObject(light);
     light->setPosition(0,0,2);
     light->setDiffuseColour(Ogre::ColourValue(0.6, 0.6, 0.6));
     light->setDirection(0, 1, -1);
     light->setType(Ogre::Light::LightTypes::LT_DIRECTIONAL);
-//    light->setDebugDisplayEnabled(1);
+    //    light->setDebugDisplayEnabled(1);
 
     //-------------------------------------------------------------------------------------
     // create viewports
     // Create one viewport, entire window
-//        float ratio = Ogre::Real(viewport->getActualWidth()) /(float)Ogre::Real(viewport->getActualHeight());
+    //        float ratio = Ogre::Real(viewport->getActualWidth()) /(float)Ogre::Real(viewport->getActualHeight());
     ogreWindow->windowMovedOrResized();
     float ratio = ogreWindow->getWidth() /(float) ogreWindow->getHeight();
     viewport = ogreWindow->addViewport(camera,
@@ -129,8 +129,8 @@ window::~window()
 
 void window::resetCamera() {
     distance = 1;
-    yaw = 0; 
-    pitch = 0; 
+    yaw = 0;
+    pitch = 0;
     cameraNode->lookAt(Ogre::Vector3::ZERO, Ogre::Node::TransformSpace::TS_LOCAL);
     cameraNode->setPosition(Ogre::Vector3::NEGATIVE_UNIT_Z);
     
@@ -181,7 +181,7 @@ void window::updateCamera() {
     //printf("Camera: %f | %f | %f   Y %f P  %f \n", x, y, z, yaw, pitch);
     camera->setPosition(pos);
     camera->setFixedYawAxis(true, manager->getRootSceneNode()->getOrientation() * Ogre::Vector3::UNIT_Z);
-    camera->setDirection(manager->getRootSceneNode()->getOrientation() * (focal_point - pos)); 
+    camera->setDirection(manager->getRootSceneNode()->getOrientation() * (focal_point - pos));
 }
 
 bool window::mouseMoved( const OIS::MouseEvent &arg )
@@ -204,10 +204,10 @@ bool window::mouseMoved( const OIS::MouseEvent &arg )
         int height = viewport->getActualHeight();
 
         Ogre::Ray mouse_ray = camera->getCameraToViewportRay(arg.state.X.abs / (float) width,
-                              arg.state.Y.abs / (float) height);
+                                                             arg.state.Y.abs / (float) height);
 
         Ogre::Ray last_mouse_ray = camera->getCameraToViewportRay(old_state.X.abs / (float) width,
-                                   old_state.Y.abs / (float) height);
+                                                                  old_state.Y.abs / (float) height);
 
         Ogre::Vector3 last_intersect, intersect;
         if (intersectGroundPlane(mouse_ray, &intersect) &&
@@ -229,7 +229,7 @@ bool window::mouseMoved( const OIS::MouseEvent &arg )
             cpos.y = std::min(camera_limit_pos, std::max(cpos.y, -camera_limit_pos));
         }
     }
-    break;
+        break;
     case STATE_ROTATE: {
         yaw += arg.state.X.rel * 0.005;
         pitch += arg.state.Y.rel * 0.005;
@@ -239,7 +239,7 @@ bool window::mouseMoved( const OIS::MouseEvent &arg )
         if (pitch > M_PI_2  - 0.001)
             pitch = M_PI_2  - 0.001;
     }
-    break;
+        break;
     }
 
 
@@ -264,7 +264,7 @@ bool window::mousePressed( const OIS::MouseEvent &, OIS::MouseButtonID id )
         case OIS::MB_Right:
             mouse_state = STATE_ROTATE;
             break;
-        default: 
+        default:
             break;
         }
     } else {
