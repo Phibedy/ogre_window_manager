@@ -13,7 +13,6 @@ set (HEADERS
 
 include_directories("include")
 
-add_library (ogre_window_manager MODULE ${SOURCES} ${HEADERS})
-target_link_libraries(ogre_window_manager PRIVATE lms)
-#TODO
-#target_link_libraries(ogre_window_manager PRIVATE lms ${OGRE_GL})
+add_library (ogre_window_manager SHARED ${SOURCES} ${HEADERS})
+#link ogre and lms
+target_link_libraries(ogre_window_manager PRIVATE lms ogre_binding)
