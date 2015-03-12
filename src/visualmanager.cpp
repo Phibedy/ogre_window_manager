@@ -1,6 +1,6 @@
 
 #include <ogre/visualmanager.h>
-#include <core/datamanager.h>
+#include <lms/datamanager.h>
 
 #include <OGRE/OgreLogManager.h>
 #include <OGRE/OgreViewport.h>

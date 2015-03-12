@@ -8,8 +8,8 @@
 #include <OGRE/OgreSceneManager.h>
 
 #include <pthread.h>
-#include <core/framework.h>
-#include <core/datamanager.h>
+#include <lms/framework.h>
+#include <lms/datamanager.h>
 
 class VisualManager {
     friend class OgreFrameHandler;
