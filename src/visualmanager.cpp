@@ -18,20 +18,31 @@
 #include <X11/Xlib.h>
 
 VisualManager *VisualManager::_instance = NULL;
-
-VisualManager::VisualManager(lms::DataManager* dataManager):dataManager(dataManager){
-    XInitThreads();
+/**
+ * TODO NOCHMAL SELBST NEU SCHREIBEN!
+ * @brief VisualManager::VisualManager
+ * @param dataManager
+ * @param rootlogger
+ */
+VisualManager::VisualManager(lms::DataManager* dataManager,lms::logging::Logger *rootlogger):
+        dataManager(dataManager),logger("VisualManager",rootlogger){
+    logger.debug("init") << "Initialising VisualManager";
     _instance = this;
+
+    //weiss nicht warum man das braucht?
+//    XInitThreads();
 
     // construct Ogre::Root : no plugins filename, no config filename, using a custom log filename
     
     Ogre::LogManager * lm = new Ogre::LogManager();
-    lm->createLog("ogre.log", true, false, false); //TODO: redirect to our own logger.
+    //TODO: redirect to our own logger.
+    lm->createLog("ogre.log", true, false, false);
 
-    //TODO
+    //TODO Für was war das todo?
     //root = new Ogre::Root(cfg_manager->path() + "plugins.cfg", cfg_manager->path() + "default.cfg", "ogre.log");
 
     // A list of required plugins
+    //Sollte das nicht in der config stehen?
     Ogre::StringVector required_plugins;
     required_plugins.push_back("GL RenderSystem");
     required_plugins.push_back("Octree Scene Manager");
@@ -39,10 +50,14 @@ VisualManager::VisualManager(lms::DataManager* dataManager):dataManager(dataMana
     // Check if the required plugins are installed and ready for use
     // If not: exit the application
     Ogre::Root::PluginInstanceList ip = root->getInstalledPlugins();
+    logger.debug("DAVOR");
     for (Ogre::StringVector::iterator j = required_plugins.begin(); j != required_plugins.end(); j++) {
+        logger.debug("DRIN");
         bool found = false;
         // try to find the required plugin in the current installed plugins
+        //TODO ich wäre für eine variable mit dem namen o :I
         for (Ogre::Root::PluginInstanceList::iterator k = ip.begin(); k != ip.end(); k++) {
+            logger.debug("value: ")<<*k;
             if ((*k)->getName() == *j) {
                 found = true;
                 break;
@@ -50,10 +65,11 @@ VisualManager::VisualManager(lms::DataManager* dataManager):dataManager(dataMana
         }
         if (!found) { // return false because a required plugin is not available
             //TODO errorhandling
-            //printf("ERROR! Loading plugin\n");
+            printf("ERROR! Loading plugin\n");
             return;
         }
     }
+    logger.debug("DANACH");
 
     // setup resources
     //Ogre::ResourceGroupManager::getSingleton().addResourceLocation(cfg_manager->path()  + "../res/materials", "FileSystem", "General");
@@ -74,6 +90,7 @@ VisualManager::VisualManager(lms::DataManager* dataManager):dataManager(dataMana
     root->initialise(false);
 
     setupMaterials();
+    logger.debug("init") << "Initialised VisualManager";
 }
 
 VisualManager::~VisualManager()
@@ -84,8 +101,7 @@ VisualManager::~VisualManager()
     windowmap.clear();
 }
 
-visual::window* VisualManager::getWindow(const std::string &window, bool create)
-{
+visual::window* VisualManager::getWindow(const std::string &window, bool create){
     auto it = windowmap.find(window);
 
     if (it == windowmap.end()) {

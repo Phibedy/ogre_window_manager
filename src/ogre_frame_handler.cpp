@@ -1,7 +1,7 @@
 #include <ogre/ogre_frame_handler.h>
 #include <ogre/visualmanager.h>
 bool OgreFrameHandler::initialize(){
-    visualmanager = new VisualManager(this->datamanager());
+    visualmanager = new VisualManager(this->datamanager(),&logger);
     return true;
 }
 

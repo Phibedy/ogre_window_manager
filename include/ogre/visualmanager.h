@@ -2,6 +2,7 @@
 #define SHARED_VISUAL_VISUALMANAGER_H
 
 #include <ogre/window.h>
+#include <lms/logger.h>
 #include <string>
 
 #include <OGRE/OgreRoot.h>
@@ -15,7 +16,7 @@ class VisualManager {
     friend class OgreFrameHandler;
 private: 
     //TODO give logger
-    VisualManager(lms::DataManager* dataManager);
+    VisualManager(lms::DataManager *dataManager, lms::logging::Logger *rootlogger);
     ~VisualManager();
 
     static VisualManager *_instance;
@@ -45,6 +46,7 @@ private:
 
     //ConfigurationManager* cfg_manager;
     lms::DataManager* dataManager;
+    lms::logging::ChildLogger logger;
 };
 
 #endif
