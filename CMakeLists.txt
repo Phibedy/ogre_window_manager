@@ -1,4 +1,5 @@
-set ( SOURCES 
+include_directories("include")
+set ( SOURCES
         "src/ogre_frame_handler.cpp"
 	"src/interface.cpp"
 	"src/visualmanager.cpp"
@@ -10,15 +11,8 @@ set (HEADERS
 	"include/ogre/visualmanager.h"
 	"include/ogre/window.h"
 )
-#Just to add them to the ide
-set( CONFIGS
-    "configs/ogre_default.cfg"
-    "configs/ogre_plugins.cfg"
-)
 
-include_directories("include" "configs")
-
-add_library (ogre_window_manager SHARED ${SOURCES} ${HEADERS} ${CONFIGS})
+add_library (ogre_window_manager SHARED ${SOURCES} ${HEADERS})
 #link ogre and lms
 target_link_libraries(ogre_window_manager PRIVATE lms ogre_binding)
 

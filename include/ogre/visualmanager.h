@@ -56,6 +56,7 @@ private:
     lms::logging::ChildLogger logger;
 
     bool valid;
+    const lms::type::ModuleConfig* config;
     /**
      * @brief creator module that will call render
      */

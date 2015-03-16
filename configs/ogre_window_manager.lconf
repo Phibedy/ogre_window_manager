@@ -1,0 +1,4 @@
+#Default values
+width = 300
+height = 300
+moveable = 1

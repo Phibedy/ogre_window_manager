@@ -27,11 +27,12 @@ public:
     Window();
     /**
      * @brief Window::init only call this method if you know what you are doing :)
-     * @param vm
-     * @param width
-     * @param height
-     * @param title
-     * @param movement_enabbled
+     * @param rootLogger logger from the VisualManager used to create a childlogger
+     * @param vm VisualManager that created the frame
+     * @param width width of the frame
+     * @param height hight of the frame
+     * @param title title of the frame
+     * @param movement_enabbled //TODO doesn't seem to work!
      */
     void init(lms::logging::Logger& rootLogger, VisualManager* vm,int width,int height, const std::string &title,bool movement_enabbled);
     ~Window();

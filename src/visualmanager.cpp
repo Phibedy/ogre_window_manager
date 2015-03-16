@@ -25,7 +25,8 @@ VisualManager *VisualManager::_instance = NULL;
  * @param dataManager
  * @param rootlogger
  */
-VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,lms::logging::Logger *rootlogger,const std::string& pathToConfigs):
+VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,
+                             lms::logging::Logger *rootlogger,const std::string& pathToConfigs):
         dataManager(dataManager),logger("VisualManager",rootlogger){
     logger.debug("init") << "Initialising VisualManager";
     _instance = this;
@@ -33,9 +34,14 @@ VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,
 
     //create LogManager
     ogreLogManager = new Ogre::LogManager();
-    //TODO: redirect to our own logger.
+    //TODO: link to our own logger.
     ogreLogManager->createLog("ogre.log", true, false, false);
+    //Load config
+    std::vector<std::string> privateConfPaths;
+    privateConfPaths.push_back(pathToConfigs);
+    config = dataManager->getConfig(creator,"visualmanager",privateConfPaths);
 
+    //create ogre root
     root = new Ogre::Root(pathToConfigs+"ogre_plugins.cfg",pathToConfigs + "ogre_default.cfg", "ogre.log");
 
     // A list of required plugins
@@ -95,9 +101,11 @@ visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &
     if (it == windowmap.end()) {
         if (create){
             //TODO move those values into config
-            int width = 300;
-            int height = 300;
-            bool moveable = true;
+            int width = config->get<int>("width",300);
+            int height = config->get<int>("height",300);
+            bool moveable = config->get<bool>("moveable",true);
+            logger.error("'''''''''''''### moveable: ") << moveable;
+
             //create new window
             dataManager->readChannel<visual::Window>(creator,title);
             visual::Window* window = dataManager->writeChannel<visual::Window>(module,title);
