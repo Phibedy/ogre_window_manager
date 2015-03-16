@@ -1,5 +1,6 @@
 #include <ogre/window.h>
 #include <ogre/visualmanager.h>
+#include <lms/logging/logger.h>>
 
 #include <sstream>
 
@@ -12,15 +13,21 @@
 #include <OGRE/OgreEntity.h>
 
 namespace visual{
-window::window(VisualManager* vm, int w, int h, const std::string &t, bool move) :
-    creator(vm)
-  , movement_enabled(move)
-  , mouse_state(STATE_NONE)
-  , yaw (0)
-  , pitch (M_PI/2.)
-  , distance (3)
-{
-    printf("Window CTOR Title: %s\n\n", t.c_str());
+Window::Window(){
+
+}
+
+
+void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, int h, const std::string &title, bool move){
+    logger = new lms::logging::ChildLogger("window-"+title,&rootLogger);
+    creator = vm;
+    movement_enabled = move;
+    mouse_state = STATE_NONE;
+    yaw = 0;
+    pitch = M_PI/2.;
+    distance = 3;
+
+    logger->debug("init") << "ceate new Window "<< title;
     
     Ogre::NameValuePairList params;
 
@@ -28,9 +35,8 @@ window::window(VisualManager* vm, int w, int h, const std::string &t, bool move)
     params["vsync"] = "false";
 
     try {
-        ogreWindow = creator->getRoot()->createRenderWindow( t, w, h,
+        ogreWindow = creator->getRoot()->createRenderWindow( title, w, h,
                                                              false, &params );
-
         ///TODO Config parameter to read "Fullscreen"
         //ogreWindow->setFullscreen(true, 1920, 1080);
     } catch( std::exception &ex ) {
@@ -47,16 +53,16 @@ window::window(VisualManager* vm, int w, int h, const std::string &t, bool move)
     ogreWindow->setActive(true);
     ogreWindow->setAutoUpdated(false);
 
-    manager = creator->getRoot()->createSceneManager(Ogre::ST_GENERIC, "SceneManager/" + t);
+    manager = creator->getRoot()->createSceneManager(Ogre::ST_GENERIC, "SceneManager/" + title);
     manager->setAmbientLight(Ogre::ColourValue(0.1, 0.1, 0.1));
     //-------------------------------------------------------------------------------------
     // Create the camera
-    camera = manager->createCamera("Camera/" + t);
+    camera = manager->createCamera("Camera/" + title);
     camera->setNearClipDistance(0.1);
     camera->setFarClipDistance(200);
     camera->setPosition(1, 0.3, 1);
     camera->setAutoAspectRatio(true);
-    cameraNode = manager->getRootSceneNode()->createChildSceneNode("CameraNode/" + t);
+    cameraNode = manager->getRootSceneNode()->createChildSceneNode("CameraNode/" + title);
     cameraNode->attachObject(camera);
     cameraNode->setPosition(Ogre::Vector3::ZERO);
 
@@ -122,12 +128,14 @@ window::window(VisualManager* vm, int w, int h, const std::string &t, bool move)
     updateCamera();
 }
 
-window::~window()
+
+
+Window::~Window()
 {
 
 }
 
-void window::resetCamera() {
+void Window::resetCamera() {
     distance = 1;
     yaw = 0;
     pitch = 0;
@@ -137,7 +145,7 @@ void window::resetCamera() {
     updateCamera();
 }
 
-void window::update()
+void Window::update()
 {
     const OIS::MouseState &ms = mouse->getMouseState();
     ms.width = ogreWindow->getWidth();
@@ -150,7 +158,7 @@ void window::update()
 
 /** Input Stuff */
 
-bool window::intersectGroundPlane( Ogre::Ray mouse_ray, Ogre::Vector3 *intersection_3d )
+bool Window::intersectGroundPlane( Ogre::Ray mouse_ray, Ogre::Vector3 *intersection_3d )
 {
     //convert rays into reference frame //TODO What is the Target Reference Frame!
     mouse_ray.setOrigin( manager->getRootSceneNode()->convertWorldToLocalPosition( mouse_ray.getOrigin() ) );
@@ -167,7 +175,7 @@ bool window::intersectGroundPlane( Ogre::Ray mouse_ray, Ogre::Vector3 *intersect
     return true;
 }
 
-void window::updateCamera() {
+void Window::updateCamera() {
     Ogre::Vector3 focal_point (Ogre::Vector3::ZERO);
     
     //printf("distance:%f yaw : %f , pitch: %f , focal_point.x:%f, focal_point.y:%f, focal_point.z:%f \n",distance, yaw, pitch, focal_point.x ,focal_point.y, focal_point.z);
@@ -184,7 +192,7 @@ void window::updateCamera() {
     camera->setDirection(manager->getRootSceneNode()->getOrientation() * (focal_point - pos));
 }
 
-bool window::mouseMoved( const OIS::MouseEvent &arg )
+bool Window::mouseMoved( const OIS::MouseEvent &arg )
 {
     if (!movement_enabled) return true;
 
@@ -252,7 +260,7 @@ bool window::mouseMoved( const OIS::MouseEvent &arg )
     return true;
 }
 
-bool window::mousePressed( const OIS::MouseEvent &, OIS::MouseButtonID id )
+bool Window::mousePressed( const OIS::MouseEvent &, OIS::MouseButtonID id )
 {
     if (!movement_enabled) return true;
     cameraFocusNode->setVisible(true);
@@ -273,7 +281,7 @@ bool window::mousePressed( const OIS::MouseEvent &, OIS::MouseButtonID id )
     return true;
 }
 
-bool window::mouseReleased( const OIS::MouseEvent &, OIS::MouseButtonID  )
+bool Window::mouseReleased( const OIS::MouseEvent &, OIS::MouseButtonID  )
 {
     if (!movement_enabled) return true;
 
@@ -283,17 +291,17 @@ bool window::mouseReleased( const OIS::MouseEvent &, OIS::MouseButtonID  )
     return true;
 }
 
-void window::addKeyFunction(window::KeyCode key, std::function<void(void)> func)
+void Window::addKeyFunction(Window::KeyCode key, std::function<void(void)> func)
 {
     keymap.insert(std::make_pair(key, func));
 }
 
-bool window::isKeyDown(window::KeyCode key)
+bool Window::isKeyDown(Window::KeyCode key)
 {
     return keyboard->isKeyDown(key);
 }
 
-bool window::keyPressed(const OIS::KeyEvent &arg)
+bool Window::keyPressed(const OIS::KeyEvent &arg)
 {
     auto res = keymap.equal_range(arg.key);
     for (auto it = res.first; it != res.second; ++it) {
@@ -302,7 +310,7 @@ bool window::keyPressed(const OIS::KeyEvent &arg)
     return true;
 }
 
-bool window::keyReleased(const OIS::KeyEvent &){
+bool Window::keyReleased(const OIS::KeyEvent &){
     ///Ignore
     return true;
 }

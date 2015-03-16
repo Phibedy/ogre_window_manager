@@ -11,20 +11,30 @@
 
 #include <map>
 #include <functional>
+#include <lms/logger.h>
 
 class VisualManager;
 
 namespace visual
 {
 
-class window : private OIS::MouseListener, private OIS::KeyListener
+class Window : private OIS::MouseListener, private OIS::KeyListener
 {
 public:
 
     typedef OIS::KeyCode KeyCode;
 
-    window(VisualManager* vm, int width, int height, const std::string &title, bool movement_enabbled);
-    ~window();
+    Window();
+    /**
+     * @brief Window::init only call this method if you know what you are doing :)
+     * @param vm
+     * @param width
+     * @param height
+     * @param title
+     * @param movement_enabbled
+     */
+    void init(lms::logging::Logger& rootLogger, VisualManager* vm,int width,int height, const std::string &title,bool movement_enabbled);
+    ~Window();
 
     Ogre::SceneManager *getSceneManager() {
         return manager;
@@ -65,6 +75,7 @@ private:
     OIS::Keyboard *keyboard;
 
     bool movement_enabled;
+    lms::logging::Logger* logger;
 
 
 private:

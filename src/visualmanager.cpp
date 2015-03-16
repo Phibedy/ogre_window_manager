@@ -16,6 +16,7 @@
 
 #include <pthread.h>
 #include <X11/Xlib.h>
+#include <lms/framework.h>
 
 VisualManager *VisualManager::_instance = NULL;
 /**
@@ -24,99 +25,91 @@ VisualManager *VisualManager::_instance = NULL;
  * @param dataManager
  * @param rootlogger
  */
-VisualManager::VisualManager(lms::DataManager* dataManager,lms::logging::Logger *rootlogger):
+VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,lms::logging::Logger *rootlogger,const std::string& pathToConfigs):
         dataManager(dataManager),logger("VisualManager",rootlogger){
     logger.debug("init") << "Initialising VisualManager";
     _instance = this;
+    this->creator = creator;
 
-    //weiss nicht warum man das braucht?
-//    XInitThreads();
-
-    // construct Ogre::Root : no plugins filename, no config filename, using a custom log filename
-    
-    Ogre::LogManager * lm = new Ogre::LogManager();
+    //create LogManager
+    ogreLogManager = new Ogre::LogManager();
     //TODO: redirect to our own logger.
-    lm->createLog("ogre.log", true, false, false);
+    ogreLogManager->createLog("ogre.log", true, false, false);
 
-    //TODO Für was war das todo?
-    //root = new Ogre::Root(cfg_manager->path() + "plugins.cfg", cfg_manager->path() + "default.cfg", "ogre.log");
+    root = new Ogre::Root(pathToConfigs+"ogre_plugins.cfg",pathToConfigs + "ogre_default.cfg", "ogre.log");
 
     // A list of required plugins
-    //Sollte das nicht in der config stehen?
     Ogre::StringVector required_plugins;
     required_plugins.push_back("GL RenderSystem");
     required_plugins.push_back("Octree Scene Manager");
 
     // Check if the required plugins are installed and ready for use
-    // If not: exit the application
     Ogre::Root::PluginInstanceList ip = root->getInstalledPlugins();
-    logger.debug("DAVOR");
-    for (Ogre::StringVector::iterator j = required_plugins.begin(); j != required_plugins.end(); j++) {
-        logger.debug("DRIN");
+    logger.debug("check required plugins");
+    for (Ogre::StringVector::iterator required = required_plugins.begin(); required != required_plugins.end(); required++) {
         bool found = false;
         // try to find the required plugin in the current installed plugins
-        //TODO ich wäre für eine variable mit dem namen o :I
-        for (Ogre::Root::PluginInstanceList::iterator k = ip.begin(); k != ip.end(); k++) {
-            logger.debug("value: ")<<*k;
-            if ((*k)->getName() == *j) {
+        for (Ogre::Root::PluginInstanceList::iterator available = ip.begin(); available != ip.end(); available++) {
+            logger.debug("pluginName: ")<<(*available)->getName();
+            if ((*available)->getName() == *required) {
                 found = true;
                 break;
             }
         }
-        if (!found) { // return false because a required plugin is not available
-            //TODO errorhandling
-            printf("ERROR! Loading plugin\n");
-            return;
+        if (!found) {
+            invalidate();
+            logger.error("init") << "Required plugin not found: " << *required;
         }
     }
-    logger.debug("DANACH");
 
-    // setup resources
+    // TODO setup resources
     //Ogre::ResourceGroupManager::getSingleton().addResourceLocation(cfg_manager->path()  + "../res/materials", "FileSystem", "General");
 
     // configure
     // Grab the OpenGL RenderSystem, or exit
     Ogre::RenderSystem* rs = root->getRenderSystemByName("OpenGL Rendering Subsystem");
     if(!(rs->getName() == "OpenGL Rendering Subsystem")) {
-        //TODO errorhandling
-        return; //No RenderSystem found
+        invalidate();
+        logger.error("init") << "OpenGL Rendering Subsystem not found";
+    }else{
+        // configure our RenderSystem
+        rs->setConfigOption("Full Screen", "No");
+
+        root->setRenderSystem(rs);
+
+        root->initialise(false);
+
+        setupMaterials();
     }
-
-    // configure our RenderSystem
-    rs->setConfigOption("Full Screen", "No");
-
-    root->setRenderSystem(rs);
-
-    root->initialise(false);
-
-    setupMaterials();
-    logger.debug("init") << "Initialised VisualManager";
+    logger.debug("init") << "Initialised VisualManager success:" << isValid();
 }
 
-VisualManager::~VisualManager()
-{
-    for(auto it = windowmap.begin(); it != windowmap.end(); ++it) {
-        delete it->second;
-    }
+VisualManager::~VisualManager(){
+    //Windows will be deleted by the dataManager
     windowmap.clear();
 }
 
-visual::window* VisualManager::getWindow(const std::string &window, bool create){
-    auto it = windowmap.find(window);
+visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &title, bool create){
+    auto it = windowmap.find(title);
 
     if (it == windowmap.end()) {
-        if (create)
-            it = windowmap.insert(std::pair<std::string, visual::window*>(window, createWindow(window))).first;
-        else
+        if (create){
+            //TODO move those values into config
+            int width = 300;
+            int height = 300;
+            bool moveable = true;
+            //create new window
+            dataManager->readChannel<visual::Window>(creator,title);
+            visual::Window* window = dataManager->writeChannel<visual::Window>(module,title);
+
+            window->init(logger,this, width, height, title, moveable);
+            it = windowmap.insert(std::pair<std::string, visual::Window*>(title, window)).first;
+        }else{
             it->second = NULL;
+        }
     }
 
     return it->second;
-}
-
-visual::window* VisualManager::createWindow(const std::string& window,const int width,const int height,const bool moveable){
-    printf("Created window %s\n", window.c_str());
-    return new visual::window(this, width, height, window, moveable);
 }
 
 void VisualManager::render()
@@ -149,5 +142,13 @@ void VisualManager::setupMaterials(){
         Ogre::TextureUnitState *tus = dflt->getTechnique(0)->getPass(0)->createTextureUnitState();
         tus->setColourOperationEx(Ogre::LayerBlendOperationEx::LBX_MODULATE_X2, Ogre::LBS_MANUAL, Ogre::LBS_CURRENT, Ogre::ColourValue(0.6, 0.6, 0.7));
     }
+}
+
+void VisualManager::invalidate(){
+    valid = false;
+}
+
+bool VisualManager::isValid(){
+    return valid;
 }
 

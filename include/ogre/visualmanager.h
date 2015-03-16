@@ -16,7 +16,7 @@ class VisualManager {
     friend class OgreFrameHandler;
 private: 
     //TODO give logger
-    VisualManager(lms::DataManager *dataManager, lms::logging::Logger *rootlogger);
+    VisualManager(lms::Module* creator,lms::DataManager *dataManager, lms::logging::Logger *rootlogger,const std::string& pathToConfig);
     ~VisualManager();
 
     static VisualManager *_instance;
@@ -24,29 +24,42 @@ public:
     //TODO shitty singelton
     static VisualManager* getInstance() { return _instance; }
     
-    
-    visual::window* getWindow(const std::string &window, bool create_if_not_exist=true);
-        
-    Ogre::Root *getRoot() { return root; }
+    /**
+     * @brief getWindow returns a Window registered as dataChannel, so you can write on it using several modules
+     * @param module
+     * @param title will be  title of the frame and the name of the datachannel!
+     * @param create_if_not_exist
+     * @return
+     */
+    visual::Window* getWindow(lms::Module* module,const std::string &title, bool create_if_not_exist=true);
+
     void render();
     
     void startRenderJob();
     void stopRenderJob();
+    bool isValid();
+    void invalidate();
+    Ogre::Root *getRoot(){ return root; }
     
-private: 
-    Ogre::Root* root; 
+private:
+    Ogre::Root* root;
     Ogre::SceneManager *default_scenemanager;
-    visual::window *aciveWindow;
+    visual::Window *aciveWindow;
+    Ogre::LogManager* ogreLogManager;
 
-    std::map<std::string, visual::window*> windowmap;
+    std::map<std::string, visual::Window*> windowmap;
     
-    
-    visual::window* createWindow(const std::string& window,const int width = 300,const int height = 300,const bool moveable = true);
     void setupMaterials();
 
     //ConfigurationManager* cfg_manager;
     lms::DataManager* dataManager;
     lms::logging::ChildLogger logger;
+
+    bool valid;
+    /**
+     * @brief creator module that will call render
+     */
+    lms::Module* creator;
 };
 
 #endif
