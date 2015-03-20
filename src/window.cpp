@@ -14,7 +14,7 @@ namespace visual{
 Window::Window(){
 }
 
-void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, int h, const std::string &title, bool move){
+void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, int h, const std::string &title, bool move, bool fullscreen){
     logger = new lms::logging::ChildLogger("window-"+title,&rootLogger);
     creator = vm;
     movement_enabled = move;
@@ -29,17 +29,16 @@ void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, in
     try {
         ogreWindow = creator->getRoot()->createRenderWindow( title, w, h,
                                                              false, &params );
-        ///TODO Config parameter to read "Fullscreen"
-        //ogreWindow->setFullscreen(true, 1920, 1080);
+        if(fullscreen){
+            //TODO get resolution
+            //ogreWindow->setFullscreen(true, 1920, 1080);
+        }
     } catch( std::exception &ex ) {
-        std::cerr << "rviz::RenderSystem: error creating render window: "
+        logger->error("create window")<< "rviz::RenderSystem: error creating render window: "
                   << ex.what() << std::endl;
-        ogreWindow = NULL;
-    }
-
-    if( ogreWindow == NULL ) {
-        printf( "Unable to create the rendering window after 100 tries." );
-        assert(false);
+        ogreWindow = nullptr;
+        //TODO errorhandling
+        return;
     }
 
     ogreWindow->setActive(true);
@@ -54,23 +53,22 @@ void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, in
     camera->setFarClipDistance(200);
     camera->setAutoAspectRatio(true);
 
+    //why do we need that
     cameraNode = manager->getRootSceneNode()->createChildSceneNode("CameraNode/" + title);
     cameraNode->attachObject(camera);
     cameraNode->setPosition(Ogre::Vector3::ZERO);
 
-
-    //Was bringt das?
+    //why do we need that
     cameraFocusNode = cameraNode->createChildSceneNode();
     Ogre::Entity *ent = manager->createEntity(Ogre::SceneManager::PrefabType::PT_SPHERE);
     cameraFocusNode->attachObject(ent);
-    cameraFocusNode->scale(0.001, 0.001, 0.0001);
+    cameraFocusNode->setScale(0.001, 0.001, 0.0001);
     cameraFocusNode->setPosition(Ogre::Vector3::ZERO);
     cameraFocusNode->setVisible(false);
 
     //-------------------------------------------------------------------------------------
     // create viewports
     // Create one viewport, entire window
-    //        float ratio = Ogre::Real(viewport->getActualWidth()) /(float)Ogre::Real(viewport->getActualHeight());
     ogreWindow->windowMovedOrResized();
     viewport = ogreWindow->addViewport(camera,
                                        100, //Z-Order
@@ -79,13 +77,15 @@ void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, in
     viewport->setBackgroundColour(Ogre::ColourValue(0.2,0.2,0.2));
     viewport->setAutoUpdated(true);
 
-    updateCamera();
+    //set to default values
+    resetCamera();
 }
 
 
 
 Window::~Window(){
     //TODO
+    delete ogreWindow;
 }
 
 void Window::resetCamera() {
@@ -94,8 +94,6 @@ void Window::resetCamera() {
     pitch = 0;
     cameraNode->lookAt(Ogre::Vector3::ZERO, Ogre::Node::TransformSpace::TS_LOCAL);
     cameraNode->setPosition(Ogre::Vector3::NEGATIVE_UNIT_Z);
-    
-    updateCamera();
 }
 
 void Window::update(){
@@ -103,7 +101,8 @@ void Window::update(){
 }
 
 void Window::updateCamera() {
-    Ogre::Vector3 focal_point(0,0,1);// (Ogre::Vector3::ZERO);
+
+    Ogre::Vector3 focal_point(Ogre::Vector3::ZERO);
 
     float x = distance * cos( yaw ) * cos( pitch ) + focal_point.x;
     float y = distance * sin( yaw ) * cos( pitch ) + focal_point.y;
@@ -116,6 +115,7 @@ void Window::updateCamera() {
     camera->setPosition(pos);
     camera->setFixedYawAxis(true, manager->getRootSceneNode()->getOrientation() * Ogre::Vector3::UNIT_Z);
     camera->setDirection(manager->getRootSceneNode()->getOrientation() * (focal_point - pos));
+
 }
 
 } //End namespace

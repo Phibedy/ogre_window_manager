@@ -111,7 +111,7 @@ visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &
             dataManager->readChannel<visual::Window>(creator,title);
             visual::Window* window = dataManager->writeChannel<visual::Window>(module,title);
 
-            window->init(logger,this, width, height, title, moveable);
+            window->init(logger,this, width, height, title, moveable, fullscreen);
             it = windowmap.insert(std::pair<std::string, visual::Window*>(title, window)).first;
         }else{
             it->second = NULL;

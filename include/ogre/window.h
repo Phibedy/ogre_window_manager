@@ -24,8 +24,9 @@ public:
      * @param height hight of the frame
      * @param title title of the frame
      * @param movement_enabbled //TODO doesn't seem to work!
+     * @param fullscreen //TODO doesn't work yet
      */
-    void init(lms::logging::Logger& rootLogger, VisualManager* vm,int width,int height, const std::string &title,bool movement_enabbled);
+    void init(lms::logging::Logger& rootLogger, VisualManager* vm,int width,int height, const std::string &title,bool movement_enabled = true,bool fullscreen = false);
     ~Window();
 
     Ogre::SceneManager *getSceneManager() {
@@ -47,6 +48,7 @@ public:
     }
     
     void resetCamera();
+    void updateCamera();
     
 private:
     Ogre::SceneManager *manager;
@@ -61,8 +63,6 @@ private:
 
     bool movement_enabled;
     lms::logging::Logger* logger;
-private:
-    void updateCamera();
 protected:
 
     float yaw, pitch;
