@@ -47,9 +47,6 @@ public:
         movement_enabled = enabled;
     }
     
-    void resetCamera();
-    void updateCamera();
-    
 private:
     Ogre::SceneManager *manager;
     Ogre::Camera *camera;
@@ -58,15 +55,8 @@ private:
 
     VisualManager *creator;
 
-    Ogre::SceneNode *cameraNode;
-    Ogre::SceneNode *cameraFocusNode;
-
     bool movement_enabled;
     lms::logging::Logger* logger;
-protected:
-
-    float yaw, pitch;
-    float distance;
 };
 
 }

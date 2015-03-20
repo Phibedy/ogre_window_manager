@@ -53,19 +53,6 @@ void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, in
     camera->setFarClipDistance(200);
     camera->setAutoAspectRatio(true);
 
-    //why do we need that
-    cameraNode = manager->getRootSceneNode()->createChildSceneNode("CameraNode/" + title);
-    cameraNode->attachObject(camera);
-    cameraNode->setPosition(Ogre::Vector3::ZERO);
-
-    //why do we need that
-    cameraFocusNode = cameraNode->createChildSceneNode();
-    Ogre::Entity *ent = manager->createEntity(Ogre::SceneManager::PrefabType::PT_SPHERE);
-    cameraFocusNode->attachObject(ent);
-    cameraFocusNode->setScale(0.001, 0.001, 0.0001);
-    cameraFocusNode->setPosition(Ogre::Vector3::ZERO);
-    cameraFocusNode->setVisible(false);
-
     //-------------------------------------------------------------------------------------
     // create viewports
     // Create one viewport, entire window
@@ -78,44 +65,14 @@ void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, in
     viewport->setAutoUpdated(true);
 
     //set to default values
-    resetCamera();
+    //resetCamera();
 }
-
-
-
 Window::~Window(){
     //TODO
     delete ogreWindow;
 }
 
-void Window::resetCamera() {
-    distance = 1;
-    yaw = 0;
-    pitch = 0;
-    cameraNode->lookAt(Ogre::Vector3::ZERO, Ogre::Node::TransformSpace::TS_LOCAL);
-    cameraNode->setPosition(Ogre::Vector3::NEGATIVE_UNIT_Z);
-}
-
 void Window::update(){
     ogreWindow->update(true);
 }
-
-void Window::updateCamera() {
-
-    Ogre::Vector3 focal_point(Ogre::Vector3::ZERO);
-
-    float x = distance * cos( yaw ) * cos( pitch ) + focal_point.x;
-    float y = distance * sin( yaw ) * cos( pitch ) + focal_point.y;
-    float z = distance *              sin( pitch ) + focal_point.z;
-
-    //TODO why has x set to 1?
-    Ogre::Vector3 pos( x, y, z );
-    
-    printf("Camera: %f | %f | %f   Y %f P  %f \n", x, y, z, yaw, pitch);
-    camera->setPosition(pos);
-    camera->setFixedYawAxis(true, manager->getRootSceneNode()->getOrientation() * Ogre::Vector3::UNIT_Z);
-    camera->setDirection(manager->getRootSceneNode()->getOrientation() * (focal_point - pos));
-
-}
-
 } //End namespace
