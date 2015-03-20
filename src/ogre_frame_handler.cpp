@@ -13,6 +13,6 @@ bool OgreFrameHandler::deinitialize(){
 }
 
 bool OgreFrameHandler::cycle(){
-    //TODO render stuff
+    visualmanager->render();
     return true;
 }

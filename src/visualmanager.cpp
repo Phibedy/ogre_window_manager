@@ -100,11 +100,12 @@ visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &
 
     if (it == windowmap.end()) {
         if (create){
-            //TODO move those values into config
-            int width = config->get<int>("width",300);
-            int height = config->get<int>("height",300);
+            //TODO use fullscreen
+            bool fullscreen = config->get<bool>("fullscreen", false);
+            int width = config->get<int>("width",600);
+            int height = config->get<int>("height",600);
+            //TODO moveable doesn't seem to work
             bool moveable = config->get<bool>("moveable",true);
-            logger.error("'''''''''''''### moveable: ") << moveable;
 
             //create new window
             dataManager->readChannel<visual::Window>(creator,title);
@@ -120,9 +121,10 @@ visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &
     return it->second;
 }
 
-void VisualManager::render()
-{
+void VisualManager::render(){
+    logger.debug("render");
     for (auto it =windowmap.begin(); it != windowmap.end(); ++it) {
+        logger.debug("render window");
         it->second->update();
     }
     Ogre::WindowEventUtilities::messagePump();

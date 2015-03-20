@@ -5,24 +5,15 @@
 #include <OGRE/OgreCamera.h>
 #include <OGRE/OgreViewport.h>
 #include <OGRE/OgreSceneNode.h>
-#include <OGRE/OgreRay.h>
 
-#include <OIS/OIS.h>
-
-#include <map>
-#include <functional>
 #include <lms/logger.h>
 
 class VisualManager;
 
-namespace visual
-{
+namespace visual{
 
-class Window : private OIS::MouseListener, private OIS::KeyListener
-{
+class Window{
 public:
-
-    typedef OIS::KeyCode KeyCode;
 
     Window();
     /**
@@ -54,9 +45,6 @@ public:
     void enableMovement(bool enabled) {
         movement_enabled = enabled;
     }
-
-    void addKeyFunction(KeyCode key, std::function<void(void)> func);
-    bool isKeyDown(KeyCode key);
     
     void resetCamera();
     
@@ -71,37 +59,14 @@ private:
     Ogre::SceneNode *cameraNode;
     Ogre::SceneNode *cameraFocusNode;
 
-    OIS::InputManager *inputManager;
-    OIS::Mouse *mouse;
-    OIS::Keyboard *keyboard;
-
     bool movement_enabled;
     lms::logging::Logger* logger;
-
-
 private:
-    bool intersectGroundPlane(Ogre::Ray mouse_ray, Ogre::Vector3 *intersection);
     void updateCamera();
 protected:
-    OIS::MouseState old_state;
-    virtual bool mouseMoved( const OIS::MouseEvent &arg );
-    virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-    virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-
-    enum mouse_state_t {
-        STATE_TRANSLATE, ///RMB
-        STATE_ROTATE,    ///LMB
-        STATE_NONE       ///No MB
-    } mouse_state;
 
     float yaw, pitch;
-    float distance = 1;
-protected:
-
-    virtual bool keyPressed(const OIS::KeyEvent &arg);
-    virtual bool keyReleased(const OIS::KeyEvent &arg);
-
-    std::multimap<KeyCode, std::function<void(void)> > keymap;
+    float distance;
 };
 
 }
