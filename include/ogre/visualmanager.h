@@ -11,12 +11,14 @@
 #include <pthread.h>
 #include <lms/framework.h>
 #include <lms/datamanager.h>
+#include <lms/type/module_config.h>
 
 class VisualManager {
     friend class OgreFrameHandler;
 private: 
     //TODO give logger
-    VisualManager(lms::Module* creator,lms::DataManager *dataManager, lms::logging::Logger *rootlogger,const std::string& pathToConfig);
+    VisualManager(lms::Module* creator,lms::DataManager *dataManager, lms::logging::Logger *rootlogger,const std::string& pathToConfig,
+    	const lms::type::ModuleConfig *config);
     ~VisualManager();
 
     static VisualManager *_instance;

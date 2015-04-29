@@ -26,8 +26,9 @@ VisualManager *VisualManager::_instance = NULL;
  * @param rootlogger
  */
 VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,
-                             lms::logging::Logger *rootlogger,const std::string& pathToConfigs):
-        dataManager(dataManager),logger("VisualManager",rootlogger){
+                             lms::logging::Logger *rootlogger,const std::string& pathToConfigs,
+                             const lms::type::ModuleConfig *config):
+        dataManager(dataManager),logger("VisualManager",rootlogger), config(config){
     logger.debug("init") << "Initialising VisualManager";
     _instance = this;
     this->creator = creator;
@@ -39,7 +40,6 @@ VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,
     //Load config
     std::vector<std::string> privateConfPaths;
     privateConfPaths.push_back(pathToConfigs);
-    config = dataManager->getConfig(creator,"visualmanager",privateConfPaths);
 
     //create ogre root
     root = new Ogre::Root(pathToConfigs+"ogre_plugins.cfg",pathToConfigs + "ogre_default.cfg", "ogre.log");
@@ -48,7 +48,7 @@ VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,
     Ogre::StringVector required_plugins;
     required_plugins.push_back("GL RenderSystem");
     required_plugins.push_back("Octree Scene Manager");
-
+    
     // Check if the required plugins are installed and ready for use
     Ogre::Root::PluginInstanceList ip = root->getInstalledPlugins();
     logger.debug("check required plugins");
