@@ -42,7 +42,8 @@ VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,
     privateConfPaths.push_back(pathToConfigs);
 
     //create ogre root
-    root = new Ogre::Root(pathToConfigs+"ogre_plugins.cfg",pathToConfigs + "ogre_default.cfg", "ogre.log");
+    root = new Ogre::Root(pathToConfigs+"/ogre_plugins.cfg",
+                          pathToConfigs+"/ogre_default.cfg", "ogre.log");
 
     // A list of required plugins
     Ogre::StringVector required_plugins;
