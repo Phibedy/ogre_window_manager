@@ -97,9 +97,13 @@ VisualManager::~VisualManager(){
 }
 
 visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &title, bool create){
+    //grant module write access
+    logger.debug("getWindow()") << "called getwindow" << module->getName();
+    visual::Window* window = dataManager->writeChannel<visual::Window>(module,title);
+    //check if window has been already created
     auto it = windowmap.find(title);
-
     if (it == windowmap.end()) {
+        //no need to create it
         if (create){
             //TODO use fullscreen
             bool fullscreen = config->get<bool>("fullscreen", false);
@@ -110,7 +114,6 @@ visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &
 
             //create new window
             dataManager->readChannel<visual::Window>(creator,title);
-            visual::Window* window = dataManager->writeChannel<visual::Window>(module,title);
 
             window->init(logger,this, width, height, title, moveable, fullscreen);
             it = windowmap.insert(std::pair<std::string, visual::Window*>(title, window)).first;
