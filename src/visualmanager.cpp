@@ -118,7 +118,6 @@ visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &
             it->second = NULL;
         }
     }
-
     return it->second;
 }
 
