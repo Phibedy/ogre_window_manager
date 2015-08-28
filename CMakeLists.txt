@@ -6,7 +6,7 @@ set ( SOURCES
 	"src/window.cpp"
 )
 
-set (HEADERS 
+set (HEADERS
 	"include/ogre/ogre_frame_handler.h"
 	"include/ogre/visualmanager.h"
 	"include/ogre/window.h"
@@ -14,7 +14,7 @@ set (HEADERS
 
 add_library (ogre_window_manager SHARED ${SOURCES} ${HEADERS})
 #link ogre and lms
-target_link_libraries(ogre_window_manager PRIVATE lms ogre_binding)
+target_link_libraries(ogre_window_manager PRIVATE lmscore ogre_binding)
 
 
 #copy ogre configs
