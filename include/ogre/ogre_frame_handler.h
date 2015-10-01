@@ -1,7 +1,7 @@
 #ifndef OGRE_FRAME_HANDLER
 #define OGRE_FRAME_HANDLER
 #include <lms/module.h>
-#include <lms/logging/child_logger.h>
+#include <lms/logging/logger.h>
 #include <ogre/visualmanager.h>
 
 class OgreFrameHandler: public lms::Module{

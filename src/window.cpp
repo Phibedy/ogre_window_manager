@@ -15,7 +15,7 @@ Window::Window(){
 }
 
 void Window::init(lms::logging::Logger& rootLogger, VisualManager* vm, int w, int h, const std::string &title, bool move, bool fullscreen){
-    logger = new lms::logging::ChildLogger("window-"+title,&rootLogger);
+    logger = new lms::logging::Logger(rootLogger);
     creator = vm;
     movement_enabled = move;
 

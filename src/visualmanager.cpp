@@ -26,9 +26,9 @@ VisualManager *VisualManager::_instance = NULL;
  * @param rootlogger
  */
 VisualManager::VisualManager(lms::Module* creator,lms::DataManager* dataManager,
-                             lms::logging::Logger *rootlogger,const std::string& pathToConfigs,
-                             const lms::type::ModuleConfig *config):
-        dataManager(dataManager),logger("VisualManager",rootlogger), config(config){
+                             lms::logging::Logger &rootlogger,const std::string& pathToConfigs,
+                             const lms::ModuleConfig *config):
+        dataManager(dataManager),logger(rootlogger), config(config){
     logger.debug("init") << "Initialising VisualManager";
     _instance = this;
     this->creator = creator;
