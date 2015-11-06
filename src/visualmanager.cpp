@@ -99,7 +99,9 @@ VisualManager::~VisualManager(){
 visual::Window* VisualManager::getWindow(lms::Module* module,const std::string &title, bool create){
     //grant module write access
     logger.debug("getWindow()") << "called getwindow" << module->getName();
-    visual::Window* window = dataManager->writeChannel<visual::Window>(module,title);
+    lms::WriteDataChannel<visual::Window> window_ = dataManager->writeChannel<visual::Window>(module,title);
+    //TODO it should work but it's not nice
+    visual::Window *window = window_.get();
     //check if window has been already created
     auto it = windowmap.find(title);
     if (it == windowmap.end()) {
