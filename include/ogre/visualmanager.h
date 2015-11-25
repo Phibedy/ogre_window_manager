@@ -17,7 +17,7 @@ class VisualManager {
     friend class OgreFrameHandler;
 private: 
     //TODO give logger
-    VisualManager(lms::Module* creator,lms::DataManager *dataManager, lms::logging::Logger &rootlogger,const std::string& pathToConfig,
+    VisualManager(lms::Module* creator, lms::Module::FakeDataManager *dataManager, lms::logging::Logger &rootlogger, const std::string& pathToConfig,
         const lms::ModuleConfig *config);
     ~VisualManager();
 
@@ -54,7 +54,7 @@ private:
     void setupMaterials();
 
     //ConfigurationManager* cfg_manager;
-    lms::DataManager* dataManager;
+    lms::Module::FakeDataManager* dataManager;
     lms::logging::Logger logger;
 
     bool valid;
