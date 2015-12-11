@@ -1,8 +1,9 @@
 #include <ogre/ogre_frame_handler.h>
 #include <ogre/visualmanager.h>
-#include <lms/framework.h>
-bool OgreFrameHandler::initialize(){
-    std::string pathToConfigs = lms::Framework::configsDirectory;
+#include <lms/internal/framework.h>
+
+bool OgreFrameHandler::initialize() {
+    std::string pathToConfigs = lms::internal::Framework::configsDirectory;
     visualmanager = new VisualManager(this,datamanager(),logger,pathToConfigs, getConfig());
     return true;
 }

@@ -1,6 +1,5 @@
 
 #include <ogre/visualmanager.h>
-#include <lms/datamanager.h>
 
 #include <OGRE/OgreLogManager.h>
 #include <OGRE/OgreViewport.h>
@@ -15,7 +14,6 @@
 #include <OGRE/OgreTechnique.h>
 
 #include <pthread.h>
-#include <lms/framework.h>
 
 VisualManager *VisualManager::_instance = NULL;
 /**

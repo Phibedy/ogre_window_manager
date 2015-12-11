@@ -8,9 +8,8 @@
 #include <OGRE/OgreRoot.h>
 #include <OGRE/OgreSceneManager.h>
 
+#include <lms/module.h>
 #include <pthread.h>
-#include <lms/framework.h>
-#include <lms/datamanager.h>
 #include <lms/module_config.h>
 
 class VisualManager {
