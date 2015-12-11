@@ -15,7 +15,6 @@
 #include <OGRE/OgreTechnique.h>
 
 #include <pthread.h>
-#include <X11/Xlib.h>
 #include <lms/framework.h>
 
 VisualManager *VisualManager::_instance = NULL;
